@@ -13,7 +13,6 @@ cmd:option('-trSize', 20000)
 cmd:option('-valSize', 700)
 cmd:option('-trainPath','../FaceScrub/FaceScrub_trainset_128x128' )
 cmd:option('-testPath','../FaceScrub/FaceScrub_testset_128x128' )
-cmd:option('-bsize', 2)
 cmd:option('-start', 1)
 cmd:option('-stop', 8)
 params = cmd:parse(arg)
@@ -27,8 +26,8 @@ if path.exists('./generator.net') == false or params['fresh'] == 1 then
     require './model.lua'
     hyperParams = {
         epoch = 1, 
-        lamda_adv = 0.09,
-        lamda_rec = 1 - 0.09
+        lamda_adv = 0.19,
+        lamda_rec = 1 - 0.19
     }
 else
     print('Loading saved model')
@@ -37,8 +36,8 @@ else
     os.execute('mv generator.net generatorOld.net')
     os.execute('mv discriminator.net discriminatorOld.net')
     hyperParams = torch.load('./hyperParams')
-    print( hyperParams )
 end
+print( hyperParams )
 print('Loaded')
 
 print('Loading Data ... ')
@@ -170,10 +169,9 @@ TrainingStep = function( batchsize )
             end
            
             --print('______Entering sgd_D ' )
-            optim.sgd(feval_D, params_D, optimState_D)
-            optim.sgd(feval_D, params_D, optimState_D)
-            optim.sgd(feval_D, params_D, optimState_D)
-            optim.sgd(feval_D, params_D, optimState_D)
+            for k = 1, 4 do
+                optim.sgd(feval_D, params_D, optimState_D)
+            end
 
             --print('______Entering sgd_G ' )
             optim.sgd(feval_G, params_G, optimState_G)
@@ -267,26 +265,26 @@ i = hyperParams.epoch
 offest = 1
 while not converged do
     collectgarbage()
-    a = 1 + ( offest - 1 ) * validationset.size
-    b = a + validationset.size - 1
-    if b < fullset.size then
-        validationset.data = fullset.data[{{a, b}}]
-        validationset.label = fullset.label[{{a, b}}]
-        offest = offest + 1
-    else 
-        offest = 1
-    end
+    --a = 1 + ( offest - 1 ) * validationset.size
+    --b = a + validationset.size - 1
+    --if b < fullset.size then
+        --validationset.data = fullset.data[{{a, b}}]
+        --validationset.label = fullset.label[{{a, b}}]
+        --offest = offest + 1
+    --else 
+        --offest = 1
+    --end
 
     --os.execute('nvidia-smi')
 
-    if i < 40 then 
+    if i < 90 then 
         local bsize = 1 + 1
         M = torch.CudaTensor( bsize, 3, 128, 128 ):zero()
         M[{{},{},{33, 96},{33, 96}}]:fill(1)
 
         TrainingStep( bsize ) 
     else 
-        local bsize = params['bsize']
+        local bsize = 1 + 1
         M = torch.CudaTensor( bsize, 3, 128, 128 ):zero()
         M[{{},{},{33, 96},{33, 96}}]:fill(1)
         
@@ -310,7 +308,7 @@ while not converged do
         increasing = 0
     end
 
-    print('Epoch : ' .. i, 'Diff ' .. validation_loss - prev_loss, 'FullVal Loss : ' .. validation_loss, 'lamda_adv ' .. lamda_adv .. '/0.3')
+    print('Epoch : ' .. i, 'Diff ' .. validation_loss - prev_loss, 'FullVal Loss : ' .. validation_loss, 'lamda_adv ' .. lamda_adv .. '/0.30')
     prev_loss = validation_loss
     segment_count = segment_count + 1
 
@@ -327,7 +325,7 @@ while not converged do
         torch.save('discriminator.net', discriminator)
         hyperParams.lamda_adv = lamda_adv
         hyperParams.lamda_rec = lamda_rec
-        hyperParams.epoch = i
+        hyperParams.epoch = epoch
         torch.save('hyperParams', hyperParams)
         print('Saved Itermediate Models')
     end
@@ -344,7 +342,7 @@ end
 
 hyperParams.lamda_adv = lamda_adv
 hyperParams.lamda_rec = lamda_rec
-hyperParams.epoch = i
+hyperParams.epoch = epoch
 torch.save('hyperParams', hyperParams)
 
 print('Training Complete')
