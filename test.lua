@@ -63,21 +63,24 @@ print('Loaded')
 print('Processing ...')
 
 for index = params['start'], params['stop'] do
+    fullInput = torch.CudaTensor( 3, 128, 128 ):copy( testset.data[index] )
     maskedInput = torch.CudaTensor( 3, 128, 128 ):copy( testset.data[index] ):cmul( M )
     if generator ~= nil then
         local temp4DTensor = torch.CudaTensor( 2, 3, 128, 128 )
         temp4DTensor[1] = maskedInput
-        temp4DTensor[2]:fill(0)
+        temp4DTensor[2] = fullInput
         output = generator:forward( temp4DTensor )
         outputImage = output[1]
         maskedInput[{ {}, {33, 96}, {33, 96} }] = outputImage
         temp4DTensor[1] = maskedInput
         probability = discriminator:forward(temp4DTensor)
-        print( 'The output is real with probability ' , probability[1] )
-
+        print( 'The fake is real with probability ' , probability[1] )
+        print( 'Real is real with probability', probability[2] )
         print('Saving results')
         outname = index .. '_output.jpg'
+        inname = index .. '_input.jpg'
         image.save( outname, redoutline( maskedInput ) )
+        image.save( inname, redoutline( fullInput ) )
         temp4DTensor = nil
         collectgarbage()
     end

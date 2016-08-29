@@ -8,13 +8,15 @@ require 'cutorch';
 
 cmd = torch.CmdLine()
 cmd:option('-fresh', 0)
+cmd:option('-advLimit', 0.25)
+cmd:option('-advInitial', 0.20)
 cmd:option('-device', 1)
-cmd:option('-trSize', 20000)
+cmd:option('-trSize', 30000)
 cmd:option('-valSize', 700)
 cmd:option('-trainPath','../FaceScrub/FaceScrub_trainset_128x128' )
 cmd:option('-testPath','../FaceScrub/FaceScrub_testset_128x128' )
-cmd:option('-start', 1)
-cmd:option('-stop', 8)
+cmd:option('-start', 9)
+cmd:option('-stop', 16)
 params = cmd:parse(arg)
 
 cutorch.setDevice(params['device'])
@@ -26,8 +28,9 @@ if path.exists('./generator.net') == false or params['fresh'] == 1 then
     require './model.lua'
     hyperParams = {
         epoch = 1, 
-        lamda_adv = 0.19,
-        lamda_rec = 1 - 0.19
+        lamda_adv = params['advInitial'],
+        lamda_rec = 1 - params['advInitial'],
+        learningRate = 1e-3
     }
 else
     print('Loading saved model')
@@ -51,11 +54,9 @@ trainset.data = fullset.data[{{1, trainset.size}}]
 trainset.label = fullset.label[{{1, trainset.size}}]
 
 validationset = {}
---validationset.size = fullset.size - trainset.size
 validationset.size = math.min( params['valSize'], fullset.size - trainset.size )
 validationset.data = fullset.data[{{trainset.size + 1, trainset.size + validationset.size}}]
 validationset.label = fullset.label[{{trainset.size + 1, trainset.size + validationset.size}}]
-
 --------------------------------------------------------------------------
 --                  Loss Criterions                                     --
 --------------------------------------------------------------------------
@@ -65,7 +66,6 @@ lamda_rec = hyperParams.lamda_rec
 
 criterion_rec = nn.MSECriterion():cuda()
 criterion_adv = nn.BCECriterion():cuda()
-criterion_joint = nn.ParallelCriterion():add(criterion_rec, lamda_rec):add( criterion_adv, lamda_adv ):cuda()
 
 params_G, gradParams_G = generator:getParameters()
 params_D, gradParams_D = discriminator:getParameters()
@@ -74,16 +74,13 @@ params_D, gradParams_D = discriminator:getParameters()
 
 
 optimState_G = {
-   learningRate = 1e-2,
-   learningRateDecay = 1e-4,
-   weightDecay = 1e-3
+   learningRate = hyperParams.learningRate,
+   beta1 = 0.5,
 }
 
 optimState_D = {
-   learningRate = 1e-2,
-   learningRateDecay = 1e-4,
-   weightDecay = 1e-3,
-   momentum = 1e-4
+   learningRate = hyperParams.learningRate,
+   beta1 = 0.5
 }
 
 ----------------------------------------------------------------------
@@ -97,7 +94,6 @@ end
 
 TrainingStep = function( batchsize )
     --print('___Entering TrainingStep')
-    collectgarbage()
 
     local size = batchsize or 50
     --print('___Allocating gpu memo ...')
@@ -106,12 +102,10 @@ TrainingStep = function( batchsize )
     for minibatch_number = 1, trainset.size, batchsize do
         start = minibatch_number
         if start + batchsize - 1 <= trainset.size then
-            local maskedInput = trainset.data[{{start, start + batchsize - 1}}]
-            local targetImage = trainset.data[{{start, start + batchsize - 1}, {}, {33, 96}, {33, 96}}]
+            local maskedInput = trainset.data[{{start, start + batchsize - 1}}]:cuda()
+            local targetImage = trainset.data[{{start, start + batchsize - 1}, {}, {33, 96}, {33, 96}}]:cuda()
             local fullInput = trainset.data[{{start, start + batchsize - 1}}]:cuda()
-            maskedInput = maskedInput:cuda()
-            targetImage = targetImage:cuda()
-            maskedInput:cmul( 1 - M )
+            maskedInput:cmul( M )
 
             local outputImage = generator:forward( maskedInput )
             local stitchedImage = stitch( outputImage, maskedInput )
@@ -119,25 +113,22 @@ TrainingStep = function( batchsize )
                 --print('_________Entering feval_D')
                 collectgarbage()
                 if params_D ~= x_new then params_D:copy(x_new) end
+                --discriminator:apply( function(m) if torch.type(m):find('Convolution') then m.bias:zero() end end )
+                --generator:apply( function(m) if torch.type(m):find('Convolution') then m.bias:zero() end end )
                 gradParams_D:zero()
 
                  -- real updation
-
-                --local real = discriminator:forward( targetImage )
                 local real = discriminator:forward( fullInput )
                 targetLabel:fill(1)
                 local loss = criterion_adv:forward( real, targetLabel )
                 df_do = criterion_adv:backward( real, targetLabel )
-                --discriminator:backward( targetImage, df_do )
                 discriminator:backward( fullInput, df_do )
 
                 -- fake updation
-                --local fake = discriminator:forward( outputImage )
                 local fake = discriminator:forward( stitchedImage )
-                targetLabel:fill(0)
+                targetLabel:zero()
                 loss = loss + criterion_adv:forward( fake, targetLabel )
                 local df_do = criterion_adv:backward( fake, targetLabel )
-                --discriminator:backward( outputImage, df_do )
                 discriminator:backward( stitchedImage, df_do )
 
                 return loss, gradParams_D
@@ -147,18 +138,18 @@ TrainingStep = function( batchsize )
                 --print('_________Entering feval_G')
                 collectgarbage()
                 if params_G ~= x_new then params_G:copy(x_new) end
+                --discriminator:apply( function(m) if torch.type(m):find('Convolution') then m.bias:zero() end end )
+                --generator:apply( function(m) if torch.type(m):find('Convolution') then m.bias:zero() end end )
                 gradParams_G:zero()
 
-                --local fake = discriminator:forward( outputImage )
-                local fake = discriminator:forward( stitchedImage )
-                targetLabel:fill(1)
                 local loss = lamda_rec * criterion_rec:forward( outputImage, targetImage )
                 local df_do_rec = criterion_rec:backward( outputImage, targetImage )
                 
+                local fake = discriminator:forward( stitchedImage )
+                targetLabel:fill(1)
                 local loss = loss + lamda_adv * criterion_adv:forward( fake, targetLabel )
                 local df_do_adv = criterion_adv:backward( fake, targetLabel )
-                
-                --local df_dg = discriminator:updateGradInput( outputImage, df_do_adv )
+ 
                 local df_dg_full = discriminator:updateGradInput( stitchedImage, df_do_adv )
                 local df_dg = df_dg_full[{{}, {}, {33, 96}, {33, 96}}]
                 local df_do = df_dg * lamda_adv + df_do_rec * lamda_rec
@@ -169,12 +160,12 @@ TrainingStep = function( batchsize )
             end
            
             --print('______Entering sgd_D ' )
-            for k = 1, 4 do
+            for k = 1, 3 do
                 optim.sgd(feval_D, params_D, optimState_D)
             end
 
             --print('______Entering sgd_G ' )
-            optim.sgd(feval_G, params_G, optimState_G)
+            optim.adam(feval_G, params_G, optimState_G)
          end
     end
     --print('___Freeing gpu memory ...')
@@ -203,10 +194,12 @@ eval = function(  )
     targetImage = targetImage:cuda()
 
     for index = 1, size do
-        maskedInput[index]:cmul( 1 - M[1] )
+        maskedInput[index]:cmul( M[1] )
     end
     --print('___Forwarding inputs')
     local outputImage = generator:forward( maskedInput )
+    --local loss = criterion_rec:forward( outputImage, targetImage )
+    local probs = discriminator:forward( stitch( outputImage, maskedInput ) )
     local loss = lamda_rec * criterion_rec:forward( outputImage, targetImage )
     local loss = loss + lamda_adv * criterion_adv:forward( discriminator:forward( stitch( outputImage, maskedInput ) ), targetLabel  )
     --print('___Freeing memory')
@@ -214,9 +207,12 @@ eval = function(  )
     targetImage = nil
     targetLabel = nil
     collectgarbage()
+
+    meanRealism = probs:sum()
+
     --os.execute('nvidia-smi')
     --print('___Exiting eval')
-    return loss
+    return loss, meanRealism/validationset.size
 end
 
 function test( epoch )
@@ -253,7 +249,7 @@ function test( epoch )
 end
 
 --test(0)
-
+--os.execute( 'th test.lua -stop 1 -old 1' )
 -- Training
 print('Training')
 increasing = 0
@@ -277,20 +273,20 @@ while not converged do
 
     --os.execute('nvidia-smi')
 
-    if i < 90 then 
+    if i < 6 then 
         local bsize = 1 + 1
-        M = torch.CudaTensor( bsize, 3, 128, 128 ):zero()
-        M[{{},{},{33, 96},{33, 96}}]:fill(1)
+        M = torch.CudaTensor( bsize, 3, 128, 128 ):fill(1)
+        M[{{},{},{33, 96},{33, 96}}]:zero()
 
         TrainingStep( bsize ) 
     else 
-        local bsize = 1 + 1
-        M = torch.CudaTensor( bsize, 3, 128, 128 ):zero()
-        M[{{},{},{33, 96},{33, 96}}]:fill(1)
+        local bsize = 4 + 1
+        M = torch.CudaTensor( bsize, 3, 128, 128 ):fill(1)
+        M[{{},{},{33, 96},{33, 96}}]:zero()
         
         TrainingStep( bsize ) 
     end
-    validation_loss = eval()
+    validation_loss, realism = eval()
 
     if prev_loss < validation_loss and increasing == 5 then
         increasing = increasing + 1
@@ -308,13 +304,15 @@ while not converged do
         increasing = 0
     end
 
-    print('Epoch : ' .. i, 'Diff ' .. validation_loss - prev_loss, 'FullVal Loss : ' .. validation_loss, 'lamda_adv ' .. lamda_adv .. '/0.30')
+    print('Epoch : ' .. i, 'Diff ' .. validation_loss - prev_loss, 'FullVal Loss : ' .. validation_loss, 'MeanRealism : ' .. realism, 'lamda_adv ' .. lamda_adv .. '/' .. params['advLimit'])
     prev_loss = validation_loss
     segment_count = segment_count + 1
 
     if i % 5 == 0 then
         print('Saving Results')
         test( i )
+        optimState_G['learningRate'] = math.max( 2e-4, optimState_G['learningRate']*0.8 )
+        optimState_D['learningRate'] = math.max( 2e-4, optimState_D['learningRate']*0.8 )
     end
 
     if i % 10 == 0 then
@@ -325,12 +323,18 @@ while not converged do
         torch.save('discriminator.net', discriminator)
         hyperParams.lamda_adv = lamda_adv
         hyperParams.lamda_rec = lamda_rec
-        hyperParams.epoch = epoch
+        hyperParams.learningRate = optimState_G['learningRate']
+        hyperParams.epoch = i
         torch.save('hyperParams', hyperParams)
         print('Saved Itermediate Models')
     end
 
-    if lamda_adv < 0.30 then
+    if lamda_adv > params['advLimit'] and i % 10 == 0 then
+        lamda_adv = lamda_adv - 0.01
+        lamda_rec = lamda_rec + 0.01
+    end
+
+    if lamda_adv < params['advLimit'] and i % 10 == 0 then
         lamda_adv = lamda_adv + 0.01
         lamda_rec = lamda_rec - 0.01
     end
@@ -342,7 +346,8 @@ end
 
 hyperParams.lamda_adv = lamda_adv
 hyperParams.lamda_rec = lamda_rec
-hyperParams.epoch = epoch
+hyperParams.epoch = i
+hyperParams.learningRate = optimState_G['learningRate']
 torch.save('hyperParams', hyperParams)
 
 print('Training Complete')
