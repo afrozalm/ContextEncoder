@@ -40,6 +40,6 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/498_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/499_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/439_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/65_epoch__14_indexFULL.jpg)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/65_output.jpg)
 
 
