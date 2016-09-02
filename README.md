@@ -1,6 +1,7 @@
 # ContextEncoder
 An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/context_encoder/) by Deepak Pathak with changes in original model intended to improve results.
 ## Inpainting Results
+### After remodelling discriminator
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/122_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/125_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/126_output.jpg)
@@ -14,7 +15,7 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/152_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/154_output.jpg)
 
-### Results after further improvements
+### After further improvements
 
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/410_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/412_output.jpg)
