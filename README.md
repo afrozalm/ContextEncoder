@@ -16,31 +16,8 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/154_output.jpg)
 
 ### After further improvements
+Input | Ground Truth | Output | Input | Ground Truth | Output 
+------|--------------|--------|-------|--------------|--------
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/65_input.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/65_groundTruth.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/65_output.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/110_input.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/110_groundTruth.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/110_output.jpg) |
 
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/410_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/412_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/414_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/425_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/428_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/430_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/432_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/439_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/440_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/442_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/444_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/449_output.jpg)
-
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/450_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/452_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/464_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/467_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/469_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/477_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/492_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/497_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/498_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/499_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/439_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/65_output.jpg)
-
-
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/149_input.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/149_groundTruth.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/149_output.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/111_input.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/111_groundTruth.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/111_output.jpg) |
