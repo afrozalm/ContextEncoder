@@ -11,18 +11,18 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 
 ### After further improvements
 #### DEMO
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/9.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/25.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/34.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/89.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/101.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/141.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/142.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/143.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/146.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/174.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/186.gif))
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/200.gif))
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/9.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/25.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/34.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/89.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/101.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/141.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/142.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/143.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/146.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/174.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/186.gif)
+![](https://github.com/afrozalm/ContextEncoder/blob/master/results/200.gif)
 
 Ground Truth | Input | Output | Ground Truth | Input | Output 
 ------|--------------|--------|-------|--------------|--------
