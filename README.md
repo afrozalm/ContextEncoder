@@ -15,7 +15,8 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/152_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/154_output.jpg)
 
-### DEMO
+### After further improvements
+#### DEMO
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/9.gif))
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/25.gif))
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/34.gif))
@@ -29,7 +30,6 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/186.gif))
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/200.gif))
 
-### After further improvements
 Ground Truth | Input | Output | Ground Truth | Input | Output 
 ------|--------------|--------|-------|--------------|--------
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/9_groundTruth.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/9_input.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/9_output.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/25_groundTruth.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/25_input.jpg) |![](https://github.com/afrozalm/ContextEncoder/blob/master/results/25_output.jpg) |
