@@ -8,12 +8,6 @@ An implementation of [context encoder](http://people.eecs.berkeley.edu/~pathak/c
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/127_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/128_output.jpg)
 ![](https://github.com/afrozalm/ContextEncoder/blob/master/results/131_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/133_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/141_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/143_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/149_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/152_output.jpg)
-![](https://github.com/afrozalm/ContextEncoder/blob/master/results/154_output.jpg)
 
 ### After further improvements
 #### DEMO
